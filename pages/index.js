@@ -7,9 +7,11 @@ function ProfileSidebar(propriedades){
   return(
     <Box>
       <img src={`https://github.com/${propriedades.githubUser}.png`} style={{borderRadius: '8px'}} />
-      <a className="" href={`https://github.com/${propriedades.githubUser}`}>
-        @{propriedades.githubUser}
-      </a>
+      <p>
+        <a className="boxLink" href={`https://github.com/${propriedades.githubUser}`}>
+          @{propriedades.githubUser}
+        </a>
+      </p>
       <AlurakutProfileSidebarMenuDefault/>
     </Box>
   )
@@ -38,6 +40,29 @@ export default function Home() {
               Bem vindo
             </h1>
             <OrkutNostalgicIconSet/>
+          </Box>
+          <Box>
+            <h2 className="subtitle">O que você deseja fazer?</h2>
+            <form>
+              <div>
+                <input 
+                  placeholder="Qual var ser o nome da sua comunidade?" 
+                  name="title" 
+                  aria-label="Qual var ser o nome da sua comunidade?"
+                  type="text"
+                  />
+              </div>
+              <div>
+                <input 
+                  placeholder="Coloque uma URL para usarmos de capa" 
+                  name="image" 
+                  aria-label="Qual var ser o nome da sua comunidade?"/>
+              </div>
+
+              <button>
+                Criar comunidade
+              </button>
+            </form>
           </Box>
         </div>
         <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>
