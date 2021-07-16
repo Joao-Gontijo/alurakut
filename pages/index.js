@@ -44,11 +44,7 @@ function ProfileRelationsBox(propriedades){
 
 export default function Home() {
     const user = 'Joao-Gontijo';
-    const [comunidades, setComunidades] = React.useState([{
-        id: '2012312312-03123-0',
-        title: '1 for All',
-        image: 'https://pbs.twimg.com/profile_images/1212465307/RPG_da_Depress_o_400x400.png'
-    }]);
+    const [comunidades, setComunidades] = React.useState([]);
     const pessoasFavoritas = [
         'marc05v1',
         'JhonatanGSantos',
@@ -64,6 +60,28 @@ export default function Home() {
             return respostaDoServidor.json();
         }).then(function(respostaCompleta){
             setSeguidores(respostaCompleta);
+        })
+        fetch('https://graphql.datocms.com/', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'e0c8bf1b6af02aa206d797408fc382',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ "query":`
+                query {
+                    allCommunities {
+                        id
+                        title
+                        imageUrl
+                        creatorSlug
+                    }
+                }`})
+        }).then((response) => response.json())
+        .then((respostaCompleta) => {
+            const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+            setComunidades(comunidadesVindasDoDato)
+            console.log(comunidadesVindasDoDato);
         })
     }, [])
     
@@ -89,13 +107,26 @@ export default function Home() {
                             e.preventDefault();
                             const dadosDoForm = new FormData(e.target); //transformando os dados do formulário e trazendo retorno  
                             const comunidade = {
-                                id: new Date().toISOString,
                                 title: dadosDoForm.get('title'),
-                                image: dadosDoForm.get('image'),
+                                imageUrl: dadosDoForm.get('image'),
+                                creatorSlug: user,
                             }
 
-                            const comunidadesAtualizadas = [...comunidades, comunidade]
-                            setComunidades(comunidadesAtualizadas);
+                            fetch('/api/comunidades', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(comunidade)
+                            }).then(async (response) => {
+                                const dados = await response.json();
+                                console.log(dados.registroCriado);
+                                const comunidade = dados.registroCriado
+                                const comunidadesAtualizadas = [...comunidades, comunidade]
+                                setComunidades(comunidadesAtualizadas);
+                            })
+
+                            
                         }}>
                             <div>
                                 <input
@@ -129,8 +160,8 @@ export default function Home() {
                             {comunidades.map((itemAtual) => {
                                 return (
                                     <li key={itemAtual.id}>
-                                        <a href={`/users/${itemAtual.title}`}>
-                                            <img src={itemAtual.image} />
+                                        <a href={`/communities/${itemAtual.id}`}>
+                                            <img src={itemAtual.imageUrl} />
                                             <span>{itemAtual.title}</span>
                                         </a>
                                     </li>
